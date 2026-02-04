@@ -44,7 +44,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
     <style>
         html {
             /* Remove touch delay: */
-            touch-action: manipulation;
+            touch-action: none;
         }
 
         body {
@@ -65,6 +65,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
         html,
         body {
             overflow: hidden;
+            overscroll-behavior: none;
             margin: 0 !important;
             padding: 0 !important;
             height: 100%;
@@ -127,7 +128,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
             }
         }
     </style>
-<link rel="modulepreload" href="/ezchat/ezchat.js" crossorigin="anonymous" integrity="sha384-UO7Od0jj1NsFJnBWDhLiK/NnOfslb54GHoO17ntwEo+eA5wiuZxSyZXO015xk1Oo"><link rel="preload" href="/ezchat/ezchat_bg.wasm" crossorigin="anonymous" integrity="sha384-wFrZx3Susa0izACHMgr0vMnj82wlsFJbthJyNn3fmrLu2IzsF0PjqZSWXZ+eI1Y6" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/ezchat/ezchat.js" crossorigin="anonymous" integrity="sha384-z1EWqIgBBxMp5Q5JkVl0qYq5/TOfU5eOGwvyMLINpmRLFWqoLKVoql56EFsgXDV1"><link rel="preload" href="/ezchat/ezchat_bg.wasm" crossorigin="anonymous" integrity="sha384-ri9v8UIoRq4R25ZdMHTFAXa6QBqKr30fcmeaV4bOV0rCebfDtDVMiCDQdbgu3j8m" as="fetch" type="application/wasm"></head>
 
 <body>
     <!-- The WASM code will resize the canvas dynamically -->
