@@ -12,6 +12,8 @@ This program is built using `Rust` and the `egui` library, compiled to WebAssemb
 *   **Multi-Platform**: Runs in any browser via WASM.
 *   **PWA Supported**: Installable on your home screen and works with offline caching.
 
+![ezChat Screenshot](ezchat-v010.png)
+
 ## Key Features
 
 ### 🤖 Multi-AI Support
