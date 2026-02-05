@@ -4,6 +4,8 @@
 
 ### 🚀 Live Demo: [https://rustbasic.github.io/ezchat/](https://rustbasic.github.io/ezchat/)
 
+![ezChat Screenshot](ezchat-v010.png)
+
 ## Overview
 
 This program is built using `Rust` and the `egui` library, compiled to WebAssembly to run seamlessly in any modern web browser. By leveraging PWA (Progressive Web App) technology, it offers a near-native experience on both desktop and mobile.
@@ -11,8 +13,6 @@ This program is built using `Rust` and the `egui` library, compiled to WebAssemb
 *   **Fast & Secure**: Built with the safety and speed of Rust.
 *   **Multi-Platform**: Runs in any browser via WASM.
 *   **PWA Supported**: Installable on your home screen and works with offline caching.
-
-![ezChat Screenshot](ezchat-v010.png)
 
 ## Key Features
 
