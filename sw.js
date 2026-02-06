@@ -1,4 +1,4 @@
-// ezchat Version: v0.1.2
+// ezchat Version: v0.1.3
 // NOTE: Change the version number above whenever you update the app. 
 // This ensures the browser detects the change in sw.js and triggers a Service Worker update.
 
