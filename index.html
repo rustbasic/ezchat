@@ -13,8 +13,8 @@
     <!-- config for our rust wasm binary. go to https://trunkrs.dev/assets/#rust for more customization -->
     
 <script type="module">
-import init, * as bindings from '/ezchat/ezchat-a293554e0af64274.js';
-const wasm = await init({ module_or_path: '/ezchat/ezchat-a293554e0af64274_bg.wasm' });
+import init, * as bindings from '/ezchat/ezchat-8d7f1f5a9c17f33f.js';
+const wasm = await init({ module_or_path: '/ezchat/ezchat-8d7f1f5a9c17f33f_bg.wasm' });
 
 
 window.wasmBindings = bindings;
@@ -129,7 +129,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
             }
         }
     </style>
-<link rel="modulepreload" href="/ezchat/ezchat-a293554e0af64274.js" crossorigin="anonymous" integrity="sha384-F1GvgHVrvhBd2jtfY1DNWRv1r8TW6vFLWJPKsCSBNQ15t7fV83ZGjeA/i/+f5SI8"><link rel="preload" href="/ezchat/ezchat-a293554e0af64274_bg.wasm" crossorigin="anonymous" integrity="sha384-f2ZUlzpPCKxgaZKS53fLq+lfG0x2/ApkBPh5OodkLA6SKDj5Z6qKRhVCnmZ+9E2y" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/ezchat/ezchat-8d7f1f5a9c17f33f.js" crossorigin="anonymous" integrity="sha384-F1GvgHVrvhBd2jtfY1DNWRv1r8TW6vFLWJPKsCSBNQ15t7fV83ZGjeA/i/+f5SI8"><link rel="preload" href="/ezchat/ezchat-8d7f1f5a9c17f33f_bg.wasm" crossorigin="anonymous" integrity="sha384-Auw4jsClGvC5IiPklzwuvcQvrXH43qGxBrdmfWazczcXiYCbTWikpUxdml8HZnpn" as="fetch" type="application/wasm"></head>
 
 <body>
     <!-- The WASM code will resize the canvas dynamically -->
@@ -148,10 +148,17 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
     <!--Register Service Worker. this will cache the wasm / js scripts for offline use (for PWA functionality). -->
     <!-- Force refresh (Ctrl + F5) to load the latest files instead of cached files  -->
     <script>
-        // We disable caching during development so that we always view the latest version.
+        // Check for Service Worker support and skip registration in development mode
         if ('serviceWorker' in navigator && window.location.hash !== "#dev") {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('sw.js');
+                // Register service worker with 'updateViaCache: none' to bypass browser cache
+                navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+                    .then(registration => {
+                        console.log('Service Worker registered successfully with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
             });
         }
     </script>
