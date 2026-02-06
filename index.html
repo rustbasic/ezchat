@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
-<!-- Disable zooming: -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <!-- Disable zooming: -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
     <!-- change this to your project name -->
     <title> ezChat </title>
 
     <!-- config for our rust wasm binary. go to https://trunkrs.dev/assets/#rust for more customization -->
     
 <script type="module">
-import init, * as bindings from '/ezchat/ezchat.js';
-const wasm = await init({ module_or_path: '/ezchat/ezchat_bg.wasm' });
+import init, * as bindings from '/ezchat/ezchat-409f26c33aab8047.js';
+const wasm = await init({ module_or_path: '/ezchat/ezchat-409f26c33aab8047_bg.wasm' });
 
 
 window.wasmBindings = bindings;
@@ -25,7 +26,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
     <!-- this is the base url relative to which other urls will be constructed. trunk will insert this from the public-url option -->
     <base href="/ezchat/" />
 
-    <link rel="icon" href="/ezchat/favicon.ico" integrity="sha384-jNOAE6jgE03LznIulCTVP6BH4NrTuROFjP9wj8bV1UUMJKtZAvstFpIAP3PDcFpx"/>
+    <link rel="icon" href="/ezchat/favicon-f402c8741ce815ec.ico" integrity="sha384-jNOAE6jgE03LznIulCTVP6BH4NrTuROFjP9wj8bV1UUMJKtZAvstFpIAP3PDcFpx"/>
 
 
     
@@ -128,7 +129,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
             }
         }
     </style>
-<link rel="modulepreload" href="/ezchat/ezchat.js" crossorigin="anonymous" integrity="sha384-z1EWqIgBBxMp5Q5JkVl0qYq5/TOfU5eOGwvyMLINpmRLFWqoLKVoql56EFsgXDV1"><link rel="preload" href="/ezchat/ezchat_bg.wasm" crossorigin="anonymous" integrity="sha384-ri9v8UIoRq4R25ZdMHTFAXa6QBqKr30fcmeaV4bOV0rCebfDtDVMiCDQdbgu3j8m" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/ezchat/ezchat-409f26c33aab8047.js" crossorigin="anonymous" integrity="sha384-F1GvgHVrvhBd2jtfY1DNWRv1r8TW6vFLWJPKsCSBNQ15t7fV83ZGjeA/i/+f5SI8"><link rel="preload" href="/ezchat/ezchat-409f26c33aab8047_bg.wasm" crossorigin="anonymous" integrity="sha384-cA3dR3AL+6166fq3R8gX9RTgsLmh8YoTgXw/6d4UgqeA3Y9kfqH3DSMWeHImjTiV" as="fetch" type="application/wasm"></head>
 
 <body>
     <!-- The WASM code will resize the canvas dynamically -->
@@ -147,10 +148,17 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
     <!--Register Service Worker. this will cache the wasm / js scripts for offline use (for PWA functionality). -->
     <!-- Force refresh (Ctrl + F5) to load the latest files instead of cached files  -->
     <script>
-        // We disable caching during development so that we always view the latest version.
+        // Check for Service Worker support and skip registration in development mode
         if ('serviceWorker' in navigator && window.location.hash !== "#dev") {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('sw.js');
+                // Register service worker with 'updateViaCache: none' to bypass browser cache
+                navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+                    .then(registration => {
+                        console.log('Service Worker registered successfully with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
             });
         }
     </script>
