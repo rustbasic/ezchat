@@ -1,8 +1,4 @@
-// ezchat Version: v0.1.4
-// NOTE: Change the version number above whenever you update the app. 
-// This ensures the browser detects the change in sw.js and triggers a Service Worker update.
-
-var cacheName = 'ezchat-pwa-v014';
+var cacheName = 'ezchat-pwa';
 var filesToCache = [
   './',
   './index.html',
