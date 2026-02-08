@@ -13,8 +13,8 @@
     <!-- config for our rust wasm binary. go to https://trunkrs.dev/assets/#rust for more customization -->
     
 <script type="module">
-import init, * as bindings from '/ezchat/ezchat-4d5447933148da7b.js';
-const wasm = await init({ module_or_path: '/ezchat/ezchat-4d5447933148da7b_bg.wasm' });
+import init, * as bindings from '/ezchat/ezchat-1e56b0954984584a.js';
+const wasm = await init({ module_or_path: '/ezchat/ezchat-1e56b0954984584a_bg.wasm' });
 
 
 window.wasmBindings = bindings;
@@ -129,7 +129,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
             }
         }
     </style>
-<link rel="modulepreload" href="/ezchat/ezchat-4d5447933148da7b.js" crossorigin="anonymous" integrity="sha384-+wu0TONJRfCqIAbry54nRsRAVZhQH05hDlu9s0Sq0PFK9hh+Qc7qvVYLKxLQOAFY"><link rel="preload" href="/ezchat/ezchat-4d5447933148da7b_bg.wasm" crossorigin="anonymous" integrity="sha384-/k956zgRpLMJ+PkzKIZXOwkJFmoJRE7xN5Hyh7udf7l2oxS87lhK2JP3HNX6jULy" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/ezchat/ezchat-1e56b0954984584a.js" crossorigin="anonymous" integrity="sha384-QnewOz8jgokMFRPqhX12BKOh3+u/edfhb7Ur2LOALPaZrxfFpTvIRyl04GLn7DXX"><link rel="preload" href="/ezchat/ezchat-1e56b0954984584a_bg.wasm" crossorigin="anonymous" integrity="sha384-CUy8hcyHfuMCtBf+AoZdE45bXnNj871PTUO+L0bO9WAFJbRAM44uMotD1C8JK59v" as="fetch" type="application/wasm"></head>
 
 <body>
     <!-- The WASM code will resize the canvas dynamically -->
@@ -163,12 +163,29 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
         }
 
         window.updateApp = () => {
-            navigator.serviceWorker.getRegistration().then(reg => {
-                if (reg && reg.waiting) {
-                    reg.waiting.postMessage({ action: 'skipWaiting' });
-                }
-                window.location.reload();
-            });
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg) {
+                        reg.update().then(() => {
+                            if (reg.waiting) {
+                                reg.waiting.postMessage({ action: 'skipWaiting' });
+                                window.location.reload();
+                            } else {
+                                caches.keys().then(names => {
+                                    for (let name of names) caches.delete(name);
+                                });
+                                reg.unregister().then(() => {
+                                    window.location.reload(true);
+                                });
+                            }
+                        });
+                    } else {
+                        window.location.reload(true);
+                    }
+                });
+            } else {
+                window.location.reload(true);
+            }
         };
     </script>
 </body>
