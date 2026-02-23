@@ -1,9 +1,9 @@
-var cacheName = 'ezchat-pwa';
+var cacheName = 'ezclip-pwa';
 var filesToCache = [
   './',
   './index.html',
-  './ezchat.js',
-  './ezchat_bg.wasm',
+  './ezclip.js',
+  './ezclip_bg.wasm',
 ];
 
 /* Start the service worker and cache all of the app's content */
@@ -32,7 +32,6 @@ self.addEventListener('activate', function (e) {
   return self.clients.claim();
 });
 
-/* Serve cached content when offline */
 self.addEventListener('fetch', function (e) {
   e.respondWith(
     caches.match(e.request).then(function (response) {
