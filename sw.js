@@ -7,36 +7,41 @@ var filesToCache = [
 ];
 
 /* Start the service worker and cache all of the app's content */
-self.addEventListener('install', function (e) {
-  e.waitUntil(
-    caches.open(cacheName).then(function (cache) {
-      return cache.addAll(filesToCache);
-    }).then(() => {
-      return self.skipWaiting();
-    })
-  );
+self.addEventListener('install', (e) => {
+  e.waitUntil((async () => {
+    const cache = await caches.open(cacheName);
+
+    await Promise.allSettled(filesToCache.map(async (url) => {
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        await cache.put(url, res);
+      } catch (err) {
+        console.warn('[SW] precache failed:', url, err);
+      }
+    }));
+
+    await self.skipWaiting();
+  })());
 });
 
 /* Clean up outdated caches and take control of all clients immediately */
-self.addEventListener('activate', function (e) {
-  e.waitUntil(
-    caches.keys().then(function (keyList) {
-      return Promise.all(keyList.map(function (key) {
-        if (key !== cacheName) {
-          console.log('[ServiceWorker] Removing old cache', key);
-          return caches.delete(key);
-        }
-      }));
-    })
-  );
-  return self.clients.claim();
-});
+self.addEventListener('activate', (e) => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => (k !== cacheName ? caches.delete(k) : Promise.resolve())));
+    await self.clients.claim();
+  })());
+})
 
 /* Serve cached content when offline */
-self.addEventListener('fetch', function (e) {
-  e.respondWith(
-    caches.match(e.request).then(function (response) {
-      return response || fetch(e.request);
-    })
-  );
+self.addEventListener('fetch', (e) => {
+  const url = new URL(e.request.url);
+  const scope = new URL(self.registration.scope);
+  if (url.origin !== scope.origin) return;
+
+  e.respondWith((async () => {
+    const cached = await caches.match(e.request);
+    return cached || fetch(e.request);
+  })());
 });
