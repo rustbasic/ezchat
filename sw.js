@@ -17,7 +17,7 @@ self.addEventListener('install', (e) => {
         if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         await cache.put(url, res);
       } catch (err) {
-        console.warn('[SW] precache failed:', url, err);
+        console.info('[SW] precache failed:', url, err);
       }
     }));
 
