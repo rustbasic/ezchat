@@ -13,8 +13,8 @@
     <!-- config for our rust wasm binary. go to https://trunkrs.dev/assets/#rust for more customization -->
     
 <script type="module">
-import init, * as bindings from '/ezchat/ezchat-52e8f8d4fb0f2e7f.js';
-const wasm = await init({ module_or_path: '/ezchat/ezchat-52e8f8d4fb0f2e7f_bg.wasm' });
+import init, * as bindings from '/ezchat/ezchat-e9a9fd150c33ab7f.js';
+const wasm = await init({ module_or_path: '/ezchat/ezchat-e9a9fd150c33ab7f_bg.wasm' });
 
 
 window.wasmBindings = bindings;
@@ -129,7 +129,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
             }
         }
     </style>
-<link rel="modulepreload" href="/ezchat/ezchat-52e8f8d4fb0f2e7f.js" crossorigin="anonymous" integrity="sha384-rWvD4Y7Z6UCqTk3R/xZE3BTwVC4y1i9iDQ3lXBy+NgUrNtwZGGrJdsR2IyIi5HOs"><link rel="preload" href="/ezchat/ezchat-52e8f8d4fb0f2e7f_bg.wasm" crossorigin="anonymous" integrity="sha384-AAN58tp8cyp8h9FMlfjL1t0nmbU6T5xmS7h5xb0aQ7wYaeM1g1rLnTLBFWTyPgYi" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/ezchat/ezchat-e9a9fd150c33ab7f.js" crossorigin="anonymous" integrity="sha384-OkUkG/otMQyVbOq/MSrMT/G3isPIOrw1zj6wMWjdhIoHMMnda6Zhroon0PatBgdJ"><link rel="preload" href="/ezchat/ezchat-e9a9fd150c33ab7f_bg.wasm" crossorigin="anonymous" integrity="sha384-SlvWnLH9EtBJL83Y4CNorhQgwkOd/f4AID6U39yPM1lUySLqCdyyw1pqlZ0pghxu" as="fetch" type="application/wasm"></head>
 
 <body>
     <!-- The WASM code will resize the canvas dynamically -->
@@ -185,6 +185,18 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
                 });
             } else {
                 window.location.reload(true);
+            }
+        };
+
+        window.requestMicPermission = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                stream.getTracks().forEach(t => t.stop());
+                console.log("mic permission ok");
+                return true;
+            } catch (e) {
+                console.warn("mic permission failed", e);
+                return false;
             }
         };
     </script>
