@@ -13,8 +13,8 @@
     <!-- config for our rust wasm binary. go to https://trunkrs.dev/assets/#rust for more customization -->
     
 <script type="module">
-import init, * as bindings from '/ezchat/ezchat-e9a9fd150c33ab7f.js';
-const wasm = await init({ module_or_path: '/ezchat/ezchat-e9a9fd150c33ab7f_bg.wasm' });
+import init, * as bindings from '/ezchat/ezchat-d3546294bb35df9f.js';
+const wasm = await init({ module_or_path: '/ezchat/ezchat-d3546294bb35df9f_bg.wasm' });
 
 
 window.wasmBindings = bindings;
@@ -29,6 +29,8 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
     <link rel="icon" href="/ezchat/favicon-f402c8741ce815ec.ico" integrity="sha384-jNOAE6jgE03LznIulCTVP6BH4NrTuROFjP9wj8bV1UUMJKtZAvstFpIAP3PDcFpx"/>
 
 
+    
+    
     
     
     
@@ -129,7 +131,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
             }
         }
     </style>
-<link rel="modulepreload" href="/ezchat/ezchat-e9a9fd150c33ab7f.js" crossorigin="anonymous" integrity="sha384-OkUkG/otMQyVbOq/MSrMT/G3isPIOrw1zj6wMWjdhIoHMMnda6Zhroon0PatBgdJ"><link rel="preload" href="/ezchat/ezchat-e9a9fd150c33ab7f_bg.wasm" crossorigin="anonymous" integrity="sha384-SlvWnLH9EtBJL83Y4CNorhQgwkOd/f4AID6U39yPM1lUySLqCdyyw1pqlZ0pghxu" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/ezchat/ezchat-d3546294bb35df9f.js" crossorigin="anonymous" integrity="sha384-v35r+61DjH3D27SRQezwwI3g8OBMXYAc+73KCK8h+xj/bEMaiqH3zxIWGu6/lAO6"><link rel="preload" href="/ezchat/ezchat-d3546294bb35df9f_bg.wasm" crossorigin="anonymous" integrity="sha384-c0R4v+RePDBQqWEakMOQF2Pg2bD0t1wUh+zjRy+kQZdkRlP0p5Dr6RrO5hl42sXV" as="fetch" type="application/wasm"></head>
 
 <body>
     <!-- The WASM code will resize the canvas dynamically -->
@@ -185,18 +187,6 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
                 });
             } else {
                 window.location.reload(true);
-            }
-        };
-
-        window.requestMicPermission = async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-                stream.getTracks().forEach(t => t.stop());
-                console.log("mic permission ok");
-                return true;
-            } catch (e) {
-                console.warn("mic permission failed", e);
-                return false;
             }
         };
     </script>
