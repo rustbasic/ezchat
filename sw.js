@@ -1,4 +1,4 @@
-var cacheName = 'ezchat';
+var cacheName = 'ezchat-v1';
 var filesToCache = [
   './',
   './index.html',
