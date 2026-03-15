@@ -1,8 +1,9 @@
 class MicProcessor extends AudioWorkletProcessor {
-  constructor() {
+  constructor(options) {
     super();
+    const ch = options?.processorOptions?.channelCount ?? 1;
+    this.channelCount = Math.max(1, Math.min(2, ch));
     this.bufferFrames = 4096;
-    this.channelCount = 1;
     this.accum = new Float32Array(this.bufferFrames * this.channelCount);
     this.offsetFrames = 0;
     this.stopped = false;
@@ -51,7 +52,7 @@ class MicProcessor extends AudioWorkletProcessor {
       this.port.postMessage({
         type: "channels",
         inputChannelCount: availableChannels,
-        recordedChannelCount: this.channelCount
+        recordedChannelCount: Math.min(this.channelCount, availableChannels)
       });
       this.reported = true;
     }
