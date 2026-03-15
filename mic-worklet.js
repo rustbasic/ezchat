@@ -1,7 +1,7 @@
 class MicProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
-    this.bufferFrames = 8192;
+    this.bufferFrames = 4096;
     this.channelCount = 1;
     this.accum = new Float32Array(this.bufferFrames * this.channelCount);
     this.offsetFrames = 0;
