@@ -13,8 +13,8 @@
     <!-- config for our rust wasm binary. go to https://trunkrs.dev/assets/#rust for more customization -->
     
 <script type="module">
-import init, * as bindings from '/ezchat/ezchat-13ae574491b36d.js';
-const wasm = await init({ module_or_path: '/ezchat/ezchat-13ae574491b36d_bg.wasm' });
+import init, * as bindings from '/ezchat/ezchat-b818918541b304c2.js';
+const wasm = await init({ module_or_path: '/ezchat/ezchat-b818918541b304c2_bg.wasm' });
 
 
 window.wasmBindings = bindings;
@@ -29,8 +29,6 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
     <link rel="icon" href="/ezchat/favicon-f402c8741ce815ec.ico" integrity="sha384-jNOAE6jgE03LznIulCTVP6BH4NrTuROFjP9wj8bV1UUMJKtZAvstFpIAP3PDcFpx"/>
 
 
-    
-    
     
     
     
@@ -131,7 +129,7 @@ dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
             }
         }
     </style>
-<link rel="modulepreload" href="/ezchat/ezchat-13ae574491b36d.js" crossorigin="anonymous" integrity="sha384-JcJOlFi2odOpJizVbJ5oywAbD8wZLUu7x4G2T7ZN/vRuPUZ97OxDB15o9ocHy4cE"><link rel="preload" href="/ezchat/ezchat-13ae574491b36d_bg.wasm" crossorigin="anonymous" integrity="sha384-xxdEj3tMFb0I182QXbhjthnP0DT1FNKR5SJfenr6DQBWYqK+QhmmK5emWsuuX+7C" as="fetch" type="application/wasm"></head>
+<link rel="modulepreload" href="/ezchat/ezchat-b818918541b304c2.js" crossorigin="anonymous" integrity="sha384-rH3Mf+rZYeemZI1sZlV2fanOX6P5Dw4HqDBa35AtAGm++znuXr9emCTp37Vx4nzP"><link rel="preload" href="/ezchat/ezchat-b818918541b304c2_bg.wasm" crossorigin="anonymous" integrity="sha384-PDIMyFLsehLC/JlhJ8NX4nciSv+C92lv7k5IHqDenL/Yc0uoOZOloqEnHaH1NHVR" as="fetch" type="application/wasm"></head>
 
 <body>
     <!-- The WASM code will resize the canvas dynamically -->
