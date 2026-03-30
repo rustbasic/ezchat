@@ -38,10 +38,22 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   const scope = new URL(self.registration.scope);
+
   if (url.origin !== scope.origin) return;
+  if (e.request.method !== 'GET') return;
 
   e.respondWith((async () => {
     const cached = await caches.match(e.request);
-    return cached || fetch(e.request);
+    if (cached) return cached;
+
+    try {
+      return await fetch(e.request);
+    } catch (err) {
+      if (e.request.mode === 'navigate') {
+        const fallback = await caches.match('./index.html');
+        if (fallback) return fallback;
+      }
+      return Response.error();
+    }
   })());
 });
