@@ -1,4 +1,4 @@
-# guide/runtime.md
+# guides/runtime.md
 
 ## 목적
 이 문서는 현재 실행환경에 따른 제약과 가능 범위를 짧게 정리한다.
@@ -20,9 +20,9 @@
 
 JSON 실행 예시:
 ```text
-@rdos {"cmd":"rtype guide\runtime.md"}
-@rdos {"cmd":"console 80"}
-@rdos {"cmd":"rwrite {\"file\":\"tmp_demo.txt\",\"content\":\"hello\\n\"}"}
+@rdos {"cmd":"rtype","file":"guides\\runtime.md"}
+@rdos {"cmd":"console","count":80}
+@rdos {"cmd":"rwrite","file":"tmp_demo.txt","content":"hello\n"}
 ```
 
 - 읽기, 확인, 저장 같은 작업은 가능하면 내부 명령을 우선한다.
@@ -38,11 +38,11 @@ JSON 실행 예시:
 - 사용자가 직접 반영할 수 있도록 patch 후보나 코드 블럭을 제공한다.
 
 ## 문서 참조 원칙
-- R-DOS 규칙이 필요하면 `guide/rdos.md`를 참고한다.
-- 파일 저장 규칙이 필요하면 `guide/file-save.md`를 참고한다.
+- R-DOS 규칙이 필요하면 `guides/rdos.md`를 참고한다.
+- 파일 저장 규칙이 필요하면 `guides/file-save.md`를 참고한다.
 - 모든 문서를 항상 읽을 필요는 없고, 현재 작업에 필요한 문서만 참고한다.
 
 ## 요약
-- `native`: JSON 실행 예시 기반으로 실제 명령 사용 가능
+- `native`: flat JSON 실행 예시 기반으로 실제 명령 사용 가능
 - `wasm`: 실행보다 설명과 코드 제안 중심
 - 현재 환경에 맞는 범위 안에서만 작업한다.

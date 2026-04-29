@@ -14,9 +14,9 @@
 
 JSON 실행 예시:
 ```text
-@rdos {"cmd":"rtype prompts\default.md"}
-@rdos {"cmd":"rtype guides\project-structure.md"}
-@rdos {"cmd":"rtype memory\present.md"}
+@rdos {"cmd":"rtype","file":"prompts\\default.md"}
+@rdos {"cmd":"rtype","file":"guides\\project-structure.md"}
+@rdos {"cmd":"rtype","file":"memory\\present.md"}
 ```
 
 ---
@@ -53,9 +53,9 @@ JSON 실행 예시:
 ### 예시
 JSON 실행 예시:
 ```text
-@rdos {"cmd":"rtype guides\runtime.md"}
-@rdos {"cmd":"rtype guides\rdos.md head 120"}
-@rdos {"cmd":"rtype guides\file-save.md"}
+@rdos {"cmd":"rtype","file":"guides\\runtime.md"}
+@rdos {"cmd":"rtype","file":"guides\\rdos.md","count":120}
+@rdos {"cmd":"rtype","file":"guides\\file-save.md"}
 ```
 
 - 실행환경 규칙이 필요하면 `guides/runtime.md`
@@ -73,17 +73,29 @@ JSON 실행 예시:
 - 진행 방향을 놓치면 먼저 `memory/present.md`를 확인한다.
 - 전반 맥락이 필요할 때만 `memory/overview.md`를 본다.
 - 끝난 내용은 필요하면 `memory/past.md`를 참고한다.
-- 이후 계획은 필요하면 `memory/future.md`를 참고한다.
+- 장기 계획이나 상시 맥락이 필요하면 `memory/overview.md`를 참고한다.
 
 JSON 실행 예시:
 ```text
-@rdos {"cmd":"rtype memory\present.md"}
-@rdos {"cmd":"rtype memory\overview.md"}
+@rdos {"cmd":"rtype","file":"memory\\present.md"}
+@rdos {"cmd":"rtype","file":"memory\\overview.md"}
 ```
 
 ### 갱신 원칙
 - 작업 전에는 `memory/present.md`에 현재 상태와 바로 다음 단계를 짧게 기록한다.
 - 작업 후에도 결과 기준으로 다시 짧게 정리한다.
+- memory 문서는 작업 관리 목적의 문서이므로 assist가 필요할 때 자율적으로 갱신할 수 있다.
+- 별도 허락은 필요하지 않다.
+- 단, 사용자의 요구나 결정을 임의로 바꾸지 말고, 핵심 사실 위주로만 정리한다.
+- `memory/overview.md`, `memory/past.md`는 누적 참고 문서이므로 수정 전 현재 내용을 먼저 읽는다.
+- 부분 수정으로 해결 가능하면 `rinsert`, `rreplace` 같은 보강 방식을 우선한다.
+- 통째 재작성하거나 큰 정리를 할 가능성이 있으면, 작성 전에 같은 디렉토리에 `*-old.md` 백업을 먼저 만든다.
+- 새 내용을 작성한 뒤에는 `*-old.md`를 다시 확인해, 빠진 핵심이 있으면 현재 파일에 보강한다.
+- 검토가 끝나기 전에는 `*-old.md`를 삭제하지 않는다.
+- `*-old.md` 삭제 여부는 사용자와 먼저 의논한다.
+- `*-old.md`의 목적은 임시 비교와 연속성 보호이며, 읽기 절차를 생략하기 위한 용도가 아니다.
+
+
 - 중복되거나 오래된 내용은 정리한다.
 
 ---
@@ -91,10 +103,10 @@ JSON 실행 예시:
 ## 4. 추천 참조 순서
 작업 흐름 예시:
 ```text
-@rdos {"cmd":"rtype prompts\default.md"}
-@rdos {"cmd":"rtype guides\project-structure.md"}
-@rdos {"cmd":"rtype memory\present.md"}
-@rdos {"cmd":"rtype guides\rdos.md"}
+@rdos {"cmd":"rtype","file":"prompts\\default.md"}
+@rdos {"cmd":"rtype","file":"guides\\project-structure.md"}
+@rdos {"cmd":"rtype","file":"memory\\present.md"}
+@rdos {"cmd":"rtype","file":"guides\\rdos.md"}
 ```
 
 - 기본 규칙 확인

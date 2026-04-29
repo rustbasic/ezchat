@@ -12,17 +12,19 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 
 실행 예시:
 ```text
-@rdos {"cmd":"rtype guides\rdos.md"}
+@rdos {"cmd":"rtype","file":"guides\\rdos.md"}
 ```
 
 ## 핵심
-- 모든 R-DOS 명령은 `@rdos {"cmd":"..."}` 형식으로 실행한다.
+- 모든 R-DOS 명령은 flat JSON 단독 형식으로 실행한다.
+- 대표 형태는 `@rdos {"cmd":"명령어", ...}` 이다.
 - `rtype`, `rfindtext`, `console`, `rwrite`, `rreplace`, `rdelete`, `rinsert` 같은 내부 명령도 모두 이 형식 안에서 실행한다.
 - 파일 확인, 검색, 저장, 부분 수정은 내부 명령을 우선한다.
 - 필요하면 `@rdos` 안에서 일반 DOS 명령도 사용할 수 있다.
-- 필요하면 한 답변 안에서 여러 `@rdos {"cmd":"..."}` 명령을 순서대로 제시할 수 있다.
+- 필요하면 한 답변 안에서 여러 `@rdos {"cmd":...}` 명령을 순서대로 제시할 수 있다.
 - 삭제/위험 명령이나 영향 범위가 큰 작업은 사용자 확인을 우선한다.
 - 시스템 규칙 문서를 바꾼 뒤 적용이 필요하면 `rsysmsg_refresh`를 사용한다.
+- 아래 설명은 대표 사용법만 다룬다.
 
 ### assist 기준 권장 작업 패턴
 - 수정 전에는 `rtype`로 관련 범위를 먼저 확인한다.
@@ -38,16 +40,13 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 
 실행 예시:
 ```text
-@rdos {"cmd":"rtype Cargo.toml"}
-@rdos {"cmd":"rtype src\main.rs head 40"}
-@rdos {"cmd":"rtype src\main.rs from 120 40"}
-@rdos {"cmd":"rtype src\main.rs tail 30"}
-@rdos {"cmd":"rtype src\main.rs head 40 plain"}
+@rdos {"cmd":"rtype","file":"src\\main.rs","from":120,"count":40}
 ```
 
 - 긴 파일은 필요한 범위만 본다.
+- `head`, `tail`, `from`, `count`, `plain` 같은 대표 옵션을 쓴다.
 - 기본 출력은 실제 파일 줄번호를 함께 보여준다.
-- `plain`을 붙이면 줄번호 없이 내용만 보여준다.
+- `plain: true`를 주면 줄번호 없이 내용만 보여준다.
 - 수정 전에는 관련 구간을 먼저 확인하는 편이 안전하다.
 
 ### `rfindtext`
@@ -55,8 +54,7 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 
 실행 예시:
 ```text
-@rdos {"cmd":"rfindtext src\main.rs prompt"}
-@rdos {"cmd":"rfindtext guides\rdos.md rwrite"}
+@rdos {"cmd":"rfindtext","file":"src\\main.rs","text":"prompt"}
 ```
 
 - 수정할 위치 후보를 먼저 좁힐 때 유용하다.
@@ -67,74 +65,69 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 
 실행 예시:
 ```text
-@rdos {"cmd":"console"}
-@rdos {"cmd":"console 120"}
-@rdos {"cmd":"console plain"}
-@rdos {"cmd":"console 120 plain"}
+@rdos {"cmd":"console","count":120,"plain":true}
 ```
 
 - 기본은 최근 50줄을 보여준다.
-- `console <n>`처럼 줄 수를 주면 최근 n줄을 보여준다.
+- `count`를 주면 최근 n줄을 보여준다.
 - 기본 출력은 실제 콘솔 버퍼 줄번호를 함께 보여준다.
-- `plain`을 붙이면 줄번호 없이 내용만 보여준다.
+- `plain: true`를 주면 줄번호 없이 내용만 보여준다.
 - 직전 실행 결과나 진행 상황 확인에 쓴다.
 - 필요한 범위만 확인한다.
 
 ### `rwrite`
-새 파일을 만들 때 사용한다.
+새 파일을 만들거나 기존 파일 전체를 덮어쓸 때 사용한다.
 
 실행 예시:
 ```text
-@rdos {"cmd":"rwrite {\"file\":\"tmp_demo.rs\",\"content\":\"fn main() {\n    println!(\\\"demo\\\");\n}\n\"}"}
-@rdos {"cmd":"rwrite {\"file\":\"tmp_lines.txt\",\"content_lines\":[\"alpha\",\"beta\"]}"}
-@rdos {"cmd":"rwrite {\"file\":\"memory\\present.md\",\"content\":\"# present\n\n...\n\",\"overwrite\":true}"}
+@rdos {"cmd":"rwrite","file":"memory\\present.md","content":["# present","","..."],"overwrite":true}
+@rdos {"cmd":"rwrite","file":"memory\\present.md","content_esc":"# present\n\n...\n","overwrite":true}
 ```
 
 - 기본은 새 파일 생성용이다. 기존 파일이 있으면 실패한다.
-- `rwrite` 내용은 JSON에서 명시적으로 준다.
-- 내용 필드는 `content`, `content_raw`, `content_lines` 중 하나만 사용한다.
-- `content_lines`는 문자열 배열을 줄바꿈(`\n`)으로 이어 붙여 저장한다.
-- 둘 이상을 같이 주면 JSON 오류로 거절된다.
+- 대표 필드는 `file`, `content`, `overwrite`를 사용한다.
+- `content` 기본 모드는 `content_lines`와 같은 줄 배열 의미다.
+- escape 해석 문자열이 필요하면 `content_esc`를 사용한다.
+- `content_raw`, `content_lines`도 계속 명시적으로 사용할 수 있다.
 - `overwrite: true`를 주면 기존 파일 전체를 덮어쓴다.
 - 자동으로 최근 대화 내용을 저장하는 기능은 지원하지 않는다.
-- 최신 실행본에서는 JSON 문자열 안의 실제 개행, 탭, 캐리지리턴이 입력된 경우에도 공통 보정으로 처리될 수 있다.
-- 그래도 가장 안전한 기본 입력은 `\n`, `\t`, `\r`를 명시적으로 쓰는 방식이다.
-- `content_raw`나 `content_lines`는 긴 문자열이나 줄 단위 입력에서 JSON 이스케이프 부담을 줄일 때 유용하다.
 
 ### `rreplace`
 기존 파일의 일부 내용을 바꿀 때 사용한다.
 
 실행 예시:
 ```text
-@rdos {"cmd":"rtype prompts\default.md from 8 8"}
-@rdos {"cmd":"rreplace {\"file\":\"prompts\\default.md\",\"line\":10,\"old\":\"old\",\"new\":\"new\"}"}
-@rdos {"cmd":"rreplace {\"file\":\"tmp.txt\",\"original_raw\":\"a\\nb\",\"replacement_lines\":[\"x\",\"y\"]}"}
-@rdos {"cmd":"rtype prompts\default.md from 8 8"}
+@rdos {"cmd":"rtype","file":"prompts\\default.md","from":8,"count":8}
+@rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old":["old"],"new":["new"]}
+@rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old_from_clipboard":true,"new":["new"]}
+@rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old":["old"],"new_from_clipboard":true}
+@rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old_esc":"old","new_esc":"new"}
+@rdos {"cmd":"rtype","file":"prompts\\default.md","from":8,"count":8}
 ```
 
-- `rreplace`는 JSON 형식만 지원한다.
-- 단일 JSON과 `items` 배열을 사용하는 일괄 치환 형식을 지원한다.
+- `rreplace`는 flat JSON 형식으로 사용한다.
 - 기준 줄 번호는 `line`으로 준다.
 - 보통 대상 구간을 `rtype`로 먼저 확인한 뒤 쓴다.
-- 기본 필드명은 `old`, `new`를 권장하며 실제 파일 내용 기준으로 정확히 넣는다.
-- `old*`에는 현재 파일에 실제로 있는 내용을, `new*`에는 바꿀 내용을 넣는다.
-- 기존 `original`, `replacement`, `replace`도 함께 지원한다.
-- 문자열 필드는 `old`/`old_raw`/`old_lines`, `new`/`new_raw`/`new_lines`, `original`/`original_raw`/`original_lines`, `replacement`/`replacement_raw`/`replacement_lines`, `replace`/`replace_raw`/`replace_lines`처럼 같은 의미 묶음 안에서 하나만 사용한다.
-- 같은 의미 묶음에서 둘 이상을 같이 주면 JSON 오류로 거절된다.
-- `*_lines`는 문자열 배열을 줄바꿈(`\n`)으로 이어 붙여 사용한다.
-- 최신 실행본에서는 JSON 문자열 안의 실제 개행, 탭, 캐리지리턴이 입력된 경우에도 공통 보정으로 처리될 수 있다.
-- 그래도 가장 안전한 기본 입력은 `\n`, `\t`, `\r`를 명시적으로 쓰는 방식이다.
+- 대표 필드는 `file`, `line`, `old`, `new`를 사용한다.
+- 기본 `old`, `new`는 각각 `old_lines`, `new_lines`와 같은 줄 배열 의미다.
+- escape 해석 문자열이 필요하면 `old_esc`, `new_esc`를 사용한다.
+- `old_raw`, `new_raw`, `old_lines`, `new_lines`도 계속 명시적으로 사용할 수 있다.
+- `old_*` 그룹과 `new_*` 그룹은 서로 독립적으로 선택되므로 `old_raw + new_lines` 같은 혼합 조합도 허용된다.
+- 다만 같은 그룹 안에서는 한 방식만 선택해야 한다.
+- `old_from_clipboard`, `new_from_clipboard`를 사용하면 clipboard에 있는 현재 내용으로 각각 `old`, `new` 값을 대신할 수 있다.
+- `old`와 `old_from_clipboard`, `new`와 `new_from_clipboard`는 각각 동시에 사용할 수 없다.
+- `old_from_clipboard`와 `new_from_clipboard`도 동시에 사용할 수 없다.
+- clipboard가 비어 있으면 clipboard 참조 기반 `rreplace`는 실패한다.
 - 필요한 최소 범위만 치환하는 편이 안전하다.
 - 짧고 정확한 부분 수정에 우선 사용하는 편이 좋다.
 - 치환 범위가 애매하거나 줄 구조가 많이 바뀌면 `rdelete` 후 `rinsert`가 더 안전할 수 있다.
-- 실행 결과에는 `path`, `requested_line`, `applied_line`, `replaced_bytes`, `replacement_bytes`, `verified` 같은 정보가 포함될 수 있다.
 
 ### `rdelete`
 기존 파일에서 지정한 줄부터 여러 줄을 삭제할 때 사용한다.
 
 실행 예시:
 ```text
-@rdos {"cmd":"rdelete {\"file\":\"tmp.txt\",\"line\":3,\"count\":2}"}
+@rdos {"cmd":"rdelete","file":"tmp.txt","line":3,"count":2}
 ```
 
 - 삭제 전에는 `rtype`로 대상 줄을 먼저 확인하는 편이 안전하다.
@@ -146,27 +139,69 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 
 실행 예시:
 ```text
-@rdos {"cmd":"rinsert {\"file\":\"tmp.txt\",\"content\":\"gamma\"}"}
-@rdos {"cmd":"rinsert {\"file\":\"tmp.txt\",\"content\":\"gamma\",\"ensure_newline_before\":true,\"ensure_newline_after\":true}"}
-@rdos {"cmd":"rinsert {\"file\":\"src\\main.rs\",\"line\":12,\"position\":\"before\",\"content\":\"// inserted\\n\"}"}
-@rdos {"cmd":"rinsert {\"file\":\"src\\main.rs\",\"line\":12,\"expected_line\":\"fn main() {\",\"position\":\"after\",\"content\":\"    println!(\\\"debug\\\");\\n\"}"}
+@rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","content":["// inserted"]}
+@rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","content_esc":"// inserted\n"}
 ```
 
-- `rinsert`는 JSON 형식만 지원한다.
+- `rinsert`는 flat JSON 형식으로 사용한다.
 - 보통 삽입 전후를 `rtype`로 확인한다.
-- `content`, `content_raw`, `content_lines` 중 하나만 사용한다.
-- 파일 끝 삽입과 줄 기준 삽입을 모두 지원한다.
+- 대표 필드는 `file`, `line`, `position`, `content`를 사용한다.
+- `content` 기본 모드는 `content_lines`와 같은 줄 배열 의미다.
+- escape 해석 문자열이 필요하면 `content_esc`를 사용한다.
+- `content_raw`, `content_lines`도 계속 명시적으로 사용할 수 있다.
 - `line`이 없으면 파일 끝 삽입으로 처리한다.
 - 요청 `line`이 현재 마지막 줄보다 크면 파일 끝 append로 처리한다.
-- `line`과 `position`으로 삽입 위치를 정한다.
 - `position`은 `before` 또는 `after`를 사용한다.
-- `expected_line`을 함께 주면 기준 줄 검증에 도움이 된다.
+- `expected_line`을 함께 주면, 기준 줄이 내가 확인한 내용과 같은지 검증할 수 있다. 특히 비어 있지 않은 줄에 삽입할 때 안전하다.
 - 긴 삽입은 한 번에 크게 넣기보다 더 작은 덩어리로 나누면 안전하다.
-- 필요하면 `ensure_newline_before`, `ensure_newline_after`로 줄바꿈을 보정한다.
 - 치환보다 삽입이 더 안전한 상황이면 `rreplace` 대신 `rinsert`를 고려한다.
 - 비어 있지 않은 줄의 앞이나 뒤에 삽입할 때는 먼저 `rtype`로 기준 줄을 확인하는 편이 안전하다.
-- 기준 줄에 백슬래시나 이스케이프 문자가 있으면 `expected_line` 작성이 까다로울 수 있다.
-- 이런 경우에는 주변 빈 줄 기준 삽입이나 더 작은 수정 경로를 함께 고려한다.
+
+### `rcopy`
+파일에서 지정한 줄 범위를 clipboard로 복사할 때 사용한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"rcopy","file":"tmp.txt","line":3,"count":2}
+```
+
+- `rcopy`는 명령 인자를 flat JSON으로만 받는다.
+- 대표 필드는 `file`, `line`, `count`를 사용한다.
+- 복사 전에는 `rtype`로 대상 줄을 먼저 확인하는 편이 안전하다.
+- 성공 시 clipboard에 저장하고, 복사된 내용 preview를 함께 보여준다.
+- 여러 줄이면 공통 미리보기 규칙에 따라 일부만 축약해 보여줄 수 있다.
+- 복사한 clipboard 내용은 뒤이어 `rreplace`의 `old_from_clipboard` 또는 `new_from_clipboard`에 재사용할 수 있다.
+
+### `rcut`
+파일에서 지정한 줄 범위를 잘라내고 clipboard에 저장할 때 사용한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"rcut","file":"tmp.txt","line":3,"count":2}
+```
+
+- `rcut`는 명령 인자를 flat JSON으로만 받는다.
+- 대표 필드는 `file`, `line`, `count`를 사용한다.
+- 동작은 보통 `rcopy` 뒤 `rdelete`를 잇는 흐름으로 이해하면 된다.
+- 삭제가 실제로 성공한 경우에만 clipboard가 갱신된다.
+- 영향 범위가 큰 잘라내기는 사용자 확인을 우선하는 편이 안전하다.
+- 잘라낸 clipboard 내용도 뒤이어 `rreplace`의 `old_from_clipboard` 또는 `new_from_clipboard`에 재사용할 수 있다.
+
+### `rpaste`
+clipboard에 있는 내용을 파일의 지정 위치에 붙여 넣을 때 사용한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"rpaste","file":"tmp.txt","line":3}
+```
+
+- `rpaste`는 명령 인자를 flat JSON으로만 받는다.
+- 대표 필드는 `file`, `line`을 사용한다.
+- 내부적으로는 `rinsert` 경로를 재사용하는 붙여 넣기 흐름이다.
+- 필요하면 `expected_line`을 함께 줄 수 있고, 기준 줄이 내가 확인한 내용과 같은지 검증하는 데 쓴다. 특히 비어 있지 않은 줄에 붙여 넣을 때 안전하다.
+- 성공 시 삽입된 내용 preview를 함께 보여준다.
+- clipboard 전체를 그대로 넣는 용도이므로, 일부 내용만 바꾸려는 경우에는 `rreplace`와 목적을 구분해서 사용하는 편이 좋다.
+
 ### 기타 제어 명령
 - `rsysmsg_refresh`: prompts가 변경된 경우 적용하는 `@rdos` 명령
 - `rdos_clear`: rdos 명령이 이상해졌거나 미실행 내용을 취소할 때 쓰는 `@rdos` 명령

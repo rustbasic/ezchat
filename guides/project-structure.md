@@ -15,9 +15,9 @@
 ## 빠른 확인 예시
 문서 위치를 빠르게 확인할 때의 JSON 실행 예시:
 ```text
-@rdos {"cmd":"rtype guides\project-structure.md"}
-@rdos {"cmd":"rtype guides\document-usage.md head 80"}
-@rdos {"cmd":"rtype memory\present.md"}
+@rdos {"cmd":"rtype","file":"guides\\project-structure.md"}
+@rdos {"cmd":"rtype","file":"guides\\document-usage.md","count":80}
+@rdos {"cmd":"rtype","file":"memory\\present.md"}
 ```
 
 ## `guides`
@@ -36,12 +36,12 @@
 
 ## `memory`
 작업 상태와 프로젝트 맥락을 역할별로 나눠 기록하는 메모다.
-예: `memory/present.md`, `memory/overview.md`, `memory/past.md`, `memory/future.md`
+예: `memory/present.md`, `memory/overview.md`, `memory/past.md`
 
 - `memory/present.md`: 현재 상태, 문제, 바로 다음 단계를 짧게 적는 작업용 메모
 - `memory/overview.md`: 프로젝트 전반 맥락과 상시 참고 사항
 - `memory/past.md`: 끝난 작업 요약
-- `memory/future.md`: 이후 계획과 TODO
+
 
 ## 사용 원칙
 - 문서 위치나 역할이 헷갈리면 이 문서를 먼저 확인한다.

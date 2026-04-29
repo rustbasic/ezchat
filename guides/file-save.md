@@ -1,17 +1,17 @@
-# guide/file-save.md
+# guides/file-save.md
 
 ## 목적
 이 문서는 `rwrite`를 JSON 전용으로 사용할 때의 저장 방식을 짧게 정리한다.
 
 ## 먼저 구분
-- 실제 실행은 항상 `@rdos {"cmd":"실제명령"}` 형식으로 한다.
+- 실제 실행은 항상 `@rdos {"cmd":"명령어", ...}` 형식으로 한다.
 - 실제 실행 줄은 메시지에서 `@rdos`로 바로 시작해야 한다.
 - 코드블럭 안의 내용은 전부 텍스트로 보고 실행하지 않는다.
 - 아래 예시는 모두 바로 복붙하기 쉬운 JSON 실행 예시 기준이다.
 
 실행 예시:
 ```text
-@rdos {"cmd":"rwrite {\"file\":\"guide\\rdos.md\",\"content\":\"# title\\n\\nbody\\n\"}"}
+@rdos {"cmd":"rwrite","file":"guides\\rdos.md","content":"# title\n\nbody\n"}
 ```
 
 ## 기본 원칙
@@ -25,8 +25,8 @@
 ## 기본 사용
 실행 예시:
 ```text
-@rdos {"cmd":"rwrite {\"file\":\"notes.txt\",\"content\":\"hello\\nworld\\n\"}"}
-@rdos {"cmd":"rwrite {\"file\":\"src\\sample.rs\",\"content\":\"fn main() {\\n    println!(\\\"demo\\\");\\n}\\n\"}"}
+@rdos {"cmd":"rwrite","file":"notes.txt","content":"hello\nworld\n"}
+@rdos {"cmd":"rwrite","file":"src\\sample.rs","content":"fn main() {\n    println!(\"demo\");\n}\n"}
 ```
 
 - 파일 내용은 JSON의 `content`에서 직접 제공해야 한다.
@@ -35,7 +35,7 @@
 ## 전체 덮어쓰기
 실행 예시:
 ```text
-@rdos {"cmd":"rwrite {\"file\":\"memory\\present.md\",\"content\":\"# present\\n\\n...\\n\",\"overwrite\":true}"}
+@rdos {"cmd":"rwrite","file":"memory\\present.md","content":"# present\n\n...\n","overwrite":true}
 ```
 
 - 기존 파일 전체를 새 내용으로 덮어쓴다.
@@ -51,5 +51,5 @@
 - 작은 수정은 `rreplace`를 우선한다.
 
 ## 관련 문서
-- `guide/rdos.md`
-- `guide/rwrite-rreplace.md`
+- `guides/rdos.md`
+- `guides/rwrite-rreplace.md`
