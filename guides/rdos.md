@@ -21,6 +21,8 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 - `rtype`, `rfindtext`, `console`, `rwrite`, `rreplace`, `rdelete`, `rinsert` 같은 내부 명령도 모두 이 형식 안에서 실행한다.
 - 파일 확인, 검색, 저장, 부분 수정은 내부 명령을 우선한다.
 - 필요하면 `@rdos` 안에서 일반 DOS 명령도 사용할 수 있다.
+  - 예: `@rdos {"cmd":"dir"}`
+  - 예: `@rdos {"cmd":"cargo fmt"}`
 - 필요하면 한 답변 안에서 여러 `@rdos {"cmd":...}` 명령을 순서대로 제시할 수 있다.
 - 삭제/위험 명령이나 영향 범위가 큰 작업은 사용자 확인을 우선한다.
 - 시스템 규칙 문서를 바꾼 뒤 적용이 필요하면 `rsysmsg_refresh`를 사용한다.
@@ -122,6 +124,20 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 - 짧고 정확한 부분 수정에 우선 사용하는 편이 좋다.
 - 치환 범위가 애매하거나 줄 구조가 많이 바뀌면 `rdelete` 후 `rinsert`가 더 안전할 수 있다.
 
+#### `rreplace` 여러 개 동시 변경
+여러 위치를 한 번에 바꿔야 하면 `items` 배열을 사용한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"rreplace","items":[{"file":"src\\main.rs","line":40,"old":["old_b"],"new":["new_b"]},{"file":"src\\main.rs","line":20,"old":["old_a"],"new":["new_a"]}]}
+```
+
+- `items`의 각 항목은 단일 `rreplace`와 같은 필드(`file`, `line`, `old`, `new` 등)를 사용한다.
+- 같은 파일 안에서 여러 줄을 바꿀 때는 내부적으로 뒤쪽 줄부터 먼저 적용해, 앞쪽 수정 때문에 줄 번호가 밀리는 문제를 줄인다.
+- 결과 보고는 보통 사용자가 넣은 `items` 순서 기준으로 다시 맞춰 보여준다.
+- 같은 파일과 다른 파일을 섞어서 한 번에 요청할 수 있다.
+- 범위가 큰 일괄 수정은 먼저 `rtype`로 각 위치를 다시 확인하는 편이 안전하다.
+
 ### `rdelete`
 기존 파일에서 지정한 줄부터 여러 줄을 삭제할 때 사용한다.
 
@@ -141,6 +157,7 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 ```text
 @rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","content":["// inserted"]}
 @rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","content_esc":"// inserted\n"}
+@rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","new_from_clipboard":true}
 ```
 
 - `rinsert`는 flat JSON 형식으로 사용한다.
@@ -149,10 +166,14 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 - `content` 기본 모드는 `content_lines`와 같은 줄 배열 의미다.
 - escape 해석 문자열이 필요하면 `content_esc`를 사용한다.
 - `content_raw`, `content_lines`도 계속 명시적으로 사용할 수 있다.
+- `new_from_clipboard: true`를 주면 현재 clipboard 내용을 삽입 내용으로 사용한다.
+- clipboard가 비어 있으면 `new_from_clipboard` 기반 `rinsert`는 실패한다.
+- `new_from_clipboard`는 `content*` 또는 `text*` 계열 필드와 동시에 사용할 수 없다.
 - `line`이 없으면 파일 끝 삽입으로 처리한다.
 - 요청 `line`이 현재 마지막 줄보다 크면 파일 끝 append로 처리한다.
 - `position`은 `before` 또는 `after`를 사용한다.
 - `expected_line`을 함께 주면, 기준 줄이 내가 확인한 내용과 같은지 검증할 수 있다. 특히 비어 있지 않은 줄에 삽입할 때 안전하다.
+- `rpaste`는 내부적으로 이 clipboard 기반 `rinsert` 경로를 재사용한다.
 - 긴 삽입은 한 번에 크게 넣기보다 더 작은 덩어리로 나누면 안전하다.
 - 치환보다 삽입이 더 안전한 상황이면 `rreplace` 대신 `rinsert`를 고려한다.
 - 비어 있지 않은 줄의 앞이나 뒤에 삽입할 때는 먼저 `rtype`로 기준 줄을 확인하는 편이 안전하다.
@@ -204,6 +225,7 @@ clipboard에 있는 내용을 파일의 지정 위치에 붙여 넣을 때 사�
 
 ### 기타 제어 명령
 - `rsysmsg_refresh`: prompts가 변경된 경우 적용하는 `@rdos` 명령
+- `auto_continue_off`: 켜져 있는 `auto_continue_mode`를 끄고 예약된 auto continue deadline도 함께 정리하는 내부 명령
 - `rdos_clear`: rdos 명령이 이상해졌거나 미실행 내용을 취소할 때 쓰는 `@rdos` 명령
 - 예시: `@rdos {"cmd":"rsysmsg_refresh"}`
 - 예시: `@rdos {"cmd":"rdos_clear"}`
