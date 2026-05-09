@@ -18,7 +18,7 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 ## 핵심
 - 모든 R-DOS 명령은 flat JSON 단독 형식으로 실행한다.
 - 대표 형태는 `@rdos {"cmd":"명령어", ...}` 이다.
-- `rtype`, `rfindtext`, `console`, `rwrite`, `rreplace`, `rdelete`, `rinsert` 같은 내부 명령도 모두 이 형식 안에서 실행한다.
+- `rtype`, `rfindtext`, `rfindfile`, `console`, `rwrite`, `rreplace`, `rdelete`, `rinsert` 같은 내부 명령도 모두 이 형식 안에서 실행한다.
 - 파일 확인, 검색, 저장, 부분 수정은 내부 명령을 우선한다.
 - 필요하면 `@rdos` 안에서 일반 DOS 명령도 사용할 수 있다.
   - 예: `@rdos {"cmd":"dir"}`
@@ -59,6 +59,22 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 @rdos {"cmd":"rfindtext","file":"src\\main.rs","text":"prompt"}
 ```
 
+### `rfindfile`
+파일명이나 상대 경로에서 특정 문자열을 찾을 때 사용한다. 기본은 지정한 디렉터리 아래를 재귀 검색한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"rfindfile","path":"src","query":"rdos"}
+@rdos {"cmd":"rfindfile","path":".","query":"tools_rfindfile"}
+@rdos {"cmd":"rfindfile","path":"src","query":"tools_","recursive":false}
+@rdos {"cmd":"rfindfile","path":"src","query":"tools_","count":50}
+```
+
+- 검색 대상은 파일/디렉터리 이름과 기준 경로 기준 상대 경로다.
+- 매칭은 대소문자를 구분하지 않는다.
+- 기본값은 재귀 검색이며 결과에 `recursive: true`로 표시된다.
+- 1단계 검색만 필요하면 `--flat`, `--no-recursive`, 또는 JSON `recursive:false`를 사용한다.
+- JSON `count`는 내부 명령에서 `--max`처럼 최대 표시 개수로 변환된다.
 - 수정할 위치 후보를 먼저 좁힐 때 유용하다.
 - 치환 전에는 `rtype`로 주변 내용을 다시 확인하는 편이 안전하다.
 
@@ -104,7 +120,16 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 @rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old_from_clipboard":true,"new":["new"]}
 @rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old":["old"],"new_from_clipboard":true}
 @rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old_esc":"old","new_esc":"new"}
+@rdos {"cmd":"rreplace","file":"prompts\\default.md","line":1,"old":["old"],"new":["new"],"replace_all":true,"max_matches":10}
 @rdos {"cmd":"rtype","file":"prompts\\default.md","from":8,"count":8}
+```
+
+clipboard 재사용 흐름 예시:
+```text
+@rdos {"cmd":"rcopy","file":"prompts\\default.md","line":10,"count":3}
+@rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old_from_clipboard":true,"new":["new"]}
+@rdos {"cmd":"rcopy","file":"prompts\\default.md","line":20,"count":3}
+@rdos {"cmd":"rreplace","file":"prompts\\default.md","line":10,"old":["old"],"new_from_clipboard":true}
 ```
 
 - `rreplace`는 flat JSON 형식으로 사용한다.
@@ -119,6 +144,9 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 - `old_from_clipboard`, `new_from_clipboard`를 사용하면 clipboard에 있는 현재 내용으로 각각 `old`, `new` 값을 대신할 수 있다.
 - `old`와 `old_from_clipboard`, `new`와 `new_from_clipboard`는 각각 동시에 사용할 수 없다.
 - `old_from_clipboard`와 `new_from_clipboard`도 동시에 사용할 수 없다.
+- 기본 동작은 한 곳만 치환하며, 같은 `old` 블록을 모두 바꾸려면 `replace_all:true`를 명시한다.
+- `replace_all:true`를 사용할 때 `max_matches`를 함께 지정하면 예상보다 많은 위치가 바뀌는 것을 막을 수 있다.
+- 실제 매치 수가 `max_matches`보다 많으면 파일을 바꾸지 않고 실패한다.
 - clipboard가 비어 있으면 clipboard 참조 기반 `rreplace`는 실패한다.
 - 필요한 최소 범위만 치환하는 편이 안전하다.
 - 짧고 정확한 부분 수정에 우선 사용하는 편이 좋다.
@@ -223,10 +251,42 @@ clipboard에 있는 내용을 파일의 지정 위치에 붙여 넣을 때 사�
 - 성공 시 삽입된 내용 preview를 함께 보여준다.
 - clipboard 전체를 그대로 넣는 용도이므로, 일부 내용만 바꾸려는 경우에는 `rreplace`와 목적을 구분해서 사용하는 편이 좋다.
 
+### `cmd_child`
+background로 남아 있는 R-DOS child 명령을 확인하거나, 추적 중인 child를 종료할 때 사용한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"cmd_child","action":"list"}
+@rdos {"cmd":"cmd_child","action":"kill","pid":1234}
+```
+
+- `cmd_child`는 flat JSON 형식으로 사용한다.
+- `action`은 `list` 또는 `kill`을 사용한다.
+- `list`는 ezChat이 추적 중인 R-DOS child 목록과 실행 상태를 보여준다.
+- `kill`은 `pid` 필드가 필요하다.
+- `kill`은 `cmd_child list`에 추적 중인 R-DOS child PID만 대상으로 한다.
+- OS 전체 프로세스 PID를 직접 찾아 죽이는 용도가 아니며, 추적 목록에 없는 PID는 거부된다.
+- 긴 명령이 chat soft-timeout 이후 background로 남았을 때 `list`로 확인하고 필요한 PID만 `kill`한다.
+
+### 이미지 관련 명령
+자세한 설명은 `guides/rimage.md`를 참고한다.
+
+- `rimagegen`: 프롬프트로 새 이미지를 생성한다.
+  - 예시: `@rdos {"cmd":"rimagegen","prompt":"a cute robot icon","output_format":"png"}`
+- `rimageedit`: 기존 이미지와 지시문으로 편집 이미지를 생성한다.
+  - 예시: `@rdos {"cmd":"rimageedit","image":"ezchat_output_images\\source.png","prompt":"add a blue star"}`
+- `rimageview`: 로컬 이미지 파일이나 이미지 URL을 채팅에 표시한다.
+  - 예시: `@rdos {"cmd":"rimageview","file":"ezchat_output_images\\sample.png"}`
+- `rimageinfo`: 로컬 이미지 파일의 포맷, 크기, 파일 용량을 확인한다.
+  - 예시: `@rdos {"cmd":"rimageinfo","file":"ezchat_output_images\\sample.png"}`
+- `rimageask`: 이미지 파일이나 URL에 대해 질문하고 답변을 받는다.
+  - 예시: `@rdos {"cmd":"rimageask","image":"ezchat_output_images\\sample.png","question":"What is in this image?"}`
+
 ### 기타 제어 명령
 - `rsysmsg_refresh`: prompts가 변경된 경우 적용하는 `@rdos` 명령
 - `auto_continue_off`: 켜져 있는 `auto_continue_mode`를 끄고 예약된 auto continue deadline도 함께 정리하는 내부 명령
 - `rdos_clear`: rdos 명령이 이상해졌거나 미실행 내용을 취소할 때 쓰는 `@rdos` 명령
+- `rdos_server start/status/stop`: native R-DOS serve를 시작, 상태 확인, 중지할 때 쓰는 `@rdos` 명령. 자세한 내용은 `guides/rdos_server.md`를 참고한다.
 - 예시: `@rdos {"cmd":"rsysmsg_refresh"}`
 - 예시: `@rdos {"cmd":"rdos_clear"}`
 
