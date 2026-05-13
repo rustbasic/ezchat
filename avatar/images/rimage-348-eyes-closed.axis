@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "source_image": "rimage-348-eyes-closed.png",
+  "image_width": 1536,
+  "image_height": 1024,
+  "detected_by": "rimageask-gpt-5.5-estimate-user-adjusted",
+  "face_roll_deg": -13.0,
+  "face_yaw_deg": -5.0,
+  "face_pitch_deg": -6.0,
+  "eye_gaze_yaw_deg": 0.0,
+  "eye_gaze_pitch_deg": -12.0,
+  "face": {
+    "x": 592.0,
+    "y": 83.0,
+    "w": 260.0,
+    "h": 302.0
+  },
+  "left_eye": {
+    "x": 752.0,
+    "y": 212.0
+  },
+  "right_eye": {
+    "x": 648.0,
+    "y": 212.0
+  },
+  "nose": {
+    "x": 687.0,
+    "y": 260.0
+  },
+  "mouth": {
+    "x": 645.0,
+    "y": 288.0,
+    "w": 100.0,
+    "h": 34.0
+  }
+}
