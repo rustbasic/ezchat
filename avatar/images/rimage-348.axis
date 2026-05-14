@@ -3,7 +3,7 @@
   "source_image": "rimage-348.png",
   "image_width": 1536,
   "image_height": 1024,
-  "detected_by": "rimageask-gpt-5.5-estimate",
+  "detected_by": "rimageask-gpt-5.5-estimate,manual-axis-completed",
   "face_roll_deg": -13.0,
   "face_yaw_deg": -5.0,
   "face_pitch_deg": 0.0,
@@ -15,22 +15,46 @@
     "w": 238.0,
     "h": 300.0
   },
-  "left_eye": {
-    "x": 765.0,
-    "y": 200.0
+  "right_eyebrow": {
+    "x": 632.0,
+    "y": 165.0,
+    "w": 59.0,
+    "h": 23.0
+  },
+  "left_eyebrow": {
+    "x": 716.0,
+    "y": 159.0,
+    "w": 74.0,
+    "h": 24.0
   },
   "right_eye": {
     "x": 660.0,
-    "y": 200.0
+    "y": 200.0,
+    "box": {
+      "x": 627.0,
+      "y": 184.0,
+      "w": 67.0,
+      "h": 41.0
+    }
+  },
+  "left_eye": {
+    "x": 765.0,
+    "y": 200.0,
+    "box": {
+      "x": 732.0,
+      "y": 184.0,
+      "w": 65.0,
+      "h": 41.0
+    }
   },
   "nose": {
     "x": 711.0,
     "y": 239.0
   },
   "mouth": {
-    "x": 668.0,
+    "x": 663.0,
     "y": 275.0,
-    "w": 90.0,
-    "h": 42.0
+    "w": 100.0,
+    "h": 47.0
   }
 }
