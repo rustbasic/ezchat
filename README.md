@@ -1,6 +1,6 @@
-# ezchat
+# ezChat
 
-**ezchat** is a lightweight, high-performance web chat application powered by **Rust** and **WASM (WebAssembly)**. 
+**ezChat** is a lightweight, high-performance web chat application powered by **Rust** and **WASM (WebAssembly)**. 
 
 | Status | Primary Link | Mirror Link |
 | :---: | :---: | :---: |
@@ -8,7 +8,7 @@
 
 ### 🚀 Live Demo: [https://rustbasic.github.io/](https://rustbasic.github.io/)
 
-![ezChat Screenshot](ezchat-v010.png)
+![ezChat Screenshot](ezchat-v063.png)
 
 ## Overview
 
