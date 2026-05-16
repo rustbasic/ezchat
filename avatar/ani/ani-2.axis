@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "source_image": "ani-2.png",
+  "image_width": 1536,
+  "image_height": 1024,
+  "detected_by": "rimageask-gpt-5.5-estimate,manual-axis-initial",
+  "face_roll_deg": -3.0,
+  "face_yaw_deg": 0.0,
+  "face_pitch_deg": -2.0,
+  "eye_gaze_yaw_deg": 0.0,
+  "eye_gaze_pitch_deg": 0.0,
+  "face": {
+    "x": 510.0,
+    "y": 205.0,
+    "w": 525.0,
+    "h": 460.0
+  },
+  "right_eyebrow": {
+    "x": 555.0,
+    "y": 285.0,
+    "w": 160.0,
+    "h": 42.0
+  },
+  "left_eyebrow": {
+    "x": 805.0,
+    "y": 285.0,
+    "w": 158.0,
+    "h": 42.0
+  },
+  "right_eye": {
+    "x": 650.0,
+    "y": 421.0,
+    "box": {
+      "x": 550.0,
+      "y": 350.0,
+      "w": 170.0,
+      "h": 130.0
+    }
+  },
+  "left_eye": {
+    "x": 890.0,
+    "y": 417.0,
+    "box": {
+      "x": 805.0,
+      "y": 350.0,
+      "w": 190.0,
+      "h": 130.0
+    }
+  },
+  "nose": {
+    "x": 770.0,
+    "y": 482.0
+  },
+  "mouth": {
+    "x": 720.0,
+    "y": 552.0,
+    "w": 97.0,
+    "h": 27.0
+  }
+}

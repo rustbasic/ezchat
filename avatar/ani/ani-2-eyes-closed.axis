@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "source_image": "ani-2-eyes-closed.png",
+  "image_width": 1536,
+  "image_height": 1024,
+  "detected_by": "rimageask-gpt-5.5-estimate,image-specific-closed-eye-axis",
+  "face_roll_deg": -3.0,
+  "face_yaw_deg": 0.0,
+  "face_pitch_deg": 0.0,
+  "eye_gaze_yaw_deg": 0.0,
+  "eye_gaze_pitch_deg": 0.0,
+  "face": {
+    "x": 500.0,
+    "y": 190.0,
+    "w": 540.0,
+    "h": 470.0
+  },
+  "right_eye": {
+    "x": 632.0,
+    "y": 421.0,
+    "box": {
+      "x": 545.0,
+      "y": 384.0,
+      "w": 180.0,
+      "h": 85.0
+    }
+  },
+  "left_eye": {
+    "x": 895.0,
+    "y": 421.0,
+    "box": {
+      "x": 810.0,
+      "y": 384.0,
+      "w": 180.0,
+      "h": 85.0
+    }
+  },
+  "right_eyebrow": {
+    "x": 575.0,
+    "y": 290.0,
+    "w": 135.0,
+    "h": 30.0
+  },
+  "left_eyebrow": {
+    "x": 815.0,
+    "y": 292.0,
+    "w": 150.0,
+    "h": 30.0
+  },
+  "nose": {
+    "x": 758.0,
+    "y": 486.0
+  },
+  "mouth": {
+    "x": 716.0,
+    "y": 546.0,
+    "w": 104.0,
+    "h": 40.0
+  }
+}
