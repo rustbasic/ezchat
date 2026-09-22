@@ -18,7 +18,7 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 ## 핵심
 - 모든 R-DOS 명령은 flat JSON 단독 형식으로 실행한다.
 - 대표 형태는 `@rdos {"cmd":"명령어", ...}` 이다.
-- `rtype`, `rfindtext`, `rfindfile`, `console`, `rwrite`, `rreplace`, `rdelete`, `rinsert` 같은 내부 명령도 모두 이 형식 안에서 실행한다.
+- `rtype`, `rfindtext`, `rfindfile`, `console`, `rwrite`, `rreplace`, `rdelete`, `rfiledelete`, `rinsert` 같은 내부 명령도 모두 이 형식 안에서 실행한다.
 - 파일 확인, 검색, 저장, 부분 수정은 내부 명령을 우선한다.
 - 필요하면 `@rdos` 안에서 일반 DOS 명령도 사용할 수 있다.
   - 예: `@rdos {"cmd":"dir"}`
@@ -27,6 +27,9 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 - 삭제/위험 명령이나 영향 범위가 큰 작업은 사용자 확인을 우선한다.
 - 시스템 규칙 문서를 바꾼 뒤 적용이 필요하면 `rsysmsg_refresh`를 사용한다.
 - 아래 설명은 대표 사용법만 다룬다.
+
+## 관련 상세 문서
+- `agent_send`: 메인 채팅 R-DOS에서 live sub-agent에게 prompt를 보내는 명령이다. 상세 사용법은 `guides/agent_send.md`를 참고한다.
 
 ### assist 기준 권장 작업 패턴
 - 수정 전에는 `rtype`로 관련 범위를 먼저 확인한다.
@@ -77,6 +80,23 @@ native 환경에서 자주 쓰는 R-DOS 명령의 기본 사용법을 짧게 정
 - JSON `count`는 내부 명령에서 `--max`처럼 최대 표시 개수로 변환된다.
 - 수정할 위치 후보를 먼저 좁힐 때 유용하다.
 - 치환 전에는 `rtype`로 주변 내용을 다시 확인하는 편이 안전하다.
+
+### `rweb`
+웹 페이지나 RSS URL을 읽어 텍스트로 추출하고 `memory\web`에 저장할 때 사용한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"rweb","url":"https://example.com"}
+@rdos {"cmd":"rweb","mode":"news","query":"rust language"}
+@rdos {"cmd":"rweb","url":"https://example.com","proxy":false}
+@rdos {"cmd":"rweb","mode":"news"}
+```
+
+- 기본 읽기는 URL을 직접 지정하거나 `mode:"read"`를 사용할 수 있다.
+- `mode:"news"`는 Google News RSS 기반으로 주요 뉴스나 검색 RSS를 읽는다.
+- `proxy` 기본값은 `true`이며, WASM/browser 환경에서 먼저 direct fetch를 시도하고 실패할 때 proxy fallback을 허용한다는 뜻이다. 처음부터 proxy로 요청한다는 의미는 아니다.
+- `proxy:false` 또는 `no_proxy:true`는 WASM/browser 환경에서 direct fetch 실패 시 proxy fallback을 하지 않게 한다. native 환경은 기존처럼 직접 요청한다.
+- 저장된 결과가 길면 출력 hint의 `rtype memory\web\...` 이어 읽기 명령으로 필요한 범위를 확인한다.
 
 ### `console`
 최근 콘솔 출력을 확인할 때 사용한다.
@@ -178,6 +198,20 @@ clipboard 재사용 흐름 예시:
 - 블록 교체가 필요할 때는 `rinsert`와 함께 쓰기 좋다.
 - 영향 범위가 큰 삭제는 사용자 확인을 우선한다.
 
+### `rfiledelete`
+파일 자체를 삭제할 때 사용한다. `rdelete`가 파일 안의 줄을 지우는 명령인 것과 구분한다.
+
+실행 예시:
+```text
+@rdos {"cmd":"rfiledelete","file":"tmp.txt"}
+```
+
+- 파일 1개만 삭제한다.
+- 디렉터리 삭제는 거부한다.
+- 존재하지 않는 파일은 실패로 보고한다.
+- 파일 삭제는 위험 작업이므로 실제 대상 경로를 먼저 확인하고 사용한다.
+- 삭제 성공 시 경로와 삭제된 바이트 수를 출력한다.
+
 ### `rinsert`
 기존 파일의 특정 위치에 내용을 끼워 넣을 때 사용한다.
 
@@ -186,6 +220,8 @@ clipboard 재사용 흐름 예시:
 @rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","content":["// inserted"]}
 @rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","content_esc":"// inserted\n"}
 @rdos {"cmd":"rinsert","file":"src\\main.rs","line":12,"position":"before","new_from_clipboard":true}
+@rdos {"cmd":"rinsert","file":"src\\main.rs","position":"start","content":["// file header"]}
+@rdos {"cmd":"rinsert","file":"src\\main.rs","position":"end","content":["// file footer"]}
 ```
 
 - `rinsert`는 flat JSON 형식으로 사용한다.
@@ -197,9 +233,13 @@ clipboard 재사용 흐름 예시:
 - `new_from_clipboard: true`를 주면 현재 clipboard 내용을 삽입 내용으로 사용한다.
 - clipboard가 비어 있으면 `new_from_clipboard` 기반 `rinsert`는 실패한다.
 - `new_from_clipboard`는 `content*` 또는 `text*` 계열 필드와 동시에 사용할 수 없다.
-- `line`이 없으면 파일 끝 삽입으로 처리한다.
+- `line`이 없으면 기본적으로 파일 끝 삽입으로 처리한다.
+- `position: "start"`는 `line` 없이 파일 맨 앞에 삽입한다.
+- `position: "end"`는 `line` 없이 파일 맨 끝에 삽입한다. 기존 내용이 비어 있지 않고 줄바꿈으로 끝나지 않으면 삽입 내용 앞에 줄바꿈을 하나 추가해 마지막 기존 줄과 붙지 않게 한다. 단, 삽입 내용이 이미 줄바꿈으로 시작하면 추가하지 않는다.
+- `start` 또는 `end`와 `line`을 함께 지정하면 파일을 바꾸지 않고 오류를 반환한다.
+- 대상 파일이 없을 때는 명시적인 `start` 또는 `end`만 빈 파일로 간주해 새 파일을 만들 수 있다. 기존의 line 생략 append와 line 기반 삽입은 파일이 없으면 오류를 유지한다.
 - 요청 `line`이 현재 마지막 줄보다 크면 파일 끝 append로 처리한다.
-- `position`은 `before` 또는 `after`를 사용한다.
+- line 기반 `position`은 `before` 또는 `after`를 사용한다.
 - `expected_line`을 함께 주면, 기준 줄이 내가 확인한 내용과 같은지 검증할 수 있다. 특히 비어 있지 않은 줄에 삽입할 때 안전하다.
 - `rpaste`는 내부적으로 이 clipboard 기반 `rinsert` 경로를 재사용한다.
 - 긴 삽입은 한 번에 크게 넣기보다 더 작은 덩어리로 나누면 안전하다.
@@ -294,3 +334,26 @@ background로 남아 있는 R-DOS child 명령을 확인하거나, 추적 중인
 - 경로와 대상 텍스트를 먼저 짧게 확인하고 필요한 범위만 읽는다.
 - 수정 전 확인, 수정 후 재확인 흐름을 유지하면 실수를 줄이기 쉽다.
 - 설명용 `@rdos`는 코드블럭 안에 넣거나 줄 맨 앞에서 시작하지 않게 둬야 실행되지 않는다.
+## app_state
+
+현재 실행 중인 ezChat `MyApp` 상태를 확인하는 디버그용 R-DOS 내부 명령이다. 기본 조회는 RON 직렬화 결과를 기반으로 하며, `serde(skip)` 필드는 `page`/`find`에는 나타나지 않는다. 단, `summary`나 allowlist `get`에 직접 구현된 runtime 값은 별도로 볼 수 있다.
+
+예:
+```text
+@rdos {"cmd":"app_state"}
+@rdos {"cmd":"app_state","action":"summary"}
+@rdos {"cmd":"app_state","action":"find","text":"rdos","max":5}
+@rdos {"cmd":"app_state","action":"page","from":1,"count":40}
+@rdos {"cmd":"app_state","action":"get","path":"top_fields"}
+```
+
+현재 지원:
+- `summary`: 상태 크기, top-level fields, 일부 runtime flags 요약
+- `find`: RON 직렬화 결과에서 텍스트 검색
+- `page`: RON 직렬화 결과 일부 줄 출력
+- `get`: allowlist path 조회
+- `set`: 현재는 안전상 실제 변경하지 않고 unsupported/dry-run 안내만 출력
+
+주의:
+- 현재는 디버그용 read-only 도구로 사용한다.
+- 상태 변경이 필요하면 범용 편집보다 안전한 allowlist setter나 명시적인 snapshot/rollback 설계를 우선 검토한다.
